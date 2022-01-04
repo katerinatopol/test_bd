@@ -33,3 +33,6 @@ class Engine:
         self.engine = engine
         self.power = power
         self.type = type
+
+
+print(dir(Hull))

@@ -2,7 +2,7 @@ import sqlite3
 
 from random import randint
 
-from test_data import SHIPS_COUNT, WEAPONS_COUNT, HULLS_COUNT, ENGINES_COUNT
+from test_bd.tests.test_data import NAME_DB, SHIPS_COUNT, WEAPONS_COUNT, HULLS_COUNT, ENGINES_COUNT
 
 
 class DataBase:
@@ -100,7 +100,7 @@ class DataBase:
 
 
 def main():
-    test_db = DataBase('wargaming')
+    test_db = DataBase(NAME_DB)
     test_db.create_tables()
     test_db.insert_test_data()
     test_db.close_connection()
