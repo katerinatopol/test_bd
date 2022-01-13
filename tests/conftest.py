@@ -1,18 +1,20 @@
+import os
 from random import choice, randint
 import sqlite3
 
 import pytest
 
-from test_data import NAME_DB, WEAPONS_COUNT, HULLS_COUNT, ENGINES_COUNT
+from .test_data import NAME_DB, WEAPONS_COUNT, HULLS_COUNT, ENGINES_COUNT
 
 
-# @pytest.fixture
-def change_db(scope='session'):
+@pytest.fixture(scope='session')
+def change_db():
     # TODO убрать повторения, реорганизовать
     # создаем копию базы данных
     connection = sqlite3.connect(f'../{NAME_DB}.db')
     cursor = connection.cursor()
     cursor.execute("""vacuum into './copy_bd.db';""")
+    connection.close()
     time_base = sqlite3.connect('./copy_bd.db')
     tb_cursor = time_base.cursor()
 
@@ -48,6 +50,56 @@ def change_db(scope='session'):
         tb_cursor.execute(f"UPDATE Engines SET {change_el} = '{new_value}' WHERE engine = ?;", (engine,))
     time_base.commit()
 
-    return time_base
+    yield time_base, tb_cursor
 
-change_db()
+    # закрываем соединение и удаляем копию БД
+    time_base.close()
+    os.remove('./copy_bd.db')
+
+
+def data_true():
+    # Открываем соединение с базой данных
+    connection = sqlite3.connect(f'../{NAME_DB}.db')
+    cursor = connection.cursor()
+    data_weapons = []
+    data_hulls = {}
+    data_engines = {}
+    print('test-3')
+    # Формируем список PRIMARY KEYS
+    ships = [el[0] for el in cursor.execute("""SELECT ship FROM Ships""").fetchall()]
+    # Для каждого PRIMARY KEY
+    for ship in ships:
+        true_el = cursor.execute("""SELECT weapon, hull, engine FROM Ships WHERE ship = ?;""",
+                                     (ship, )).fetchall()[0]
+        data_weapons.append((ship, true_el[0]))
+        # data_weapons[f'{ship}'] = true_el[0]
+        # data_hulls[f'{ship}'] = true_el[1]
+        # data_engines[f'{ship}'] = true_el[2]
+    print('test-4')
+    return {'weapons': data_weapons, 'hulls': data_hulls, 'engines': data_engines}
+
+
+def data_change():
+    # Открываем соединение с базой данных
+    time_base = sqlite3.connect('./copy_bd.db')
+    tb_cursor = time_base.cursor()
+    data_weapons = []
+    data_hulls = {}
+    data_engines = {}
+    print('test-3')
+    # Формируем список PRIMARY KEYS
+    ships = [el[0] for el in tb_cursor.execute("""SELECT ship FROM Ships""").fetchall()]
+    # Для каждого PRIMARY KEY
+    for ship in ships:
+        change_el = tb_cursor.execute("""SELECT weapon, hull, engine FROM Ships WHERE ship = ?;""",
+                                          (ship, )).fetchall()[0]
+        print(change_el)
+        data_weapons.append((ship, change_el[0]))
+        # data_weapons[f'{ship}'] = change_el[0]
+        # data_hulls[f'{ship}'] = change_el[1]
+        # data_engines[f'{ship}'] = change_el[2]
+    print('test-4')
+    print(data_weapons)
+    return {'weapons': data_weapons, 'hulls': data_hulls, 'engines': data_engines}
+
+

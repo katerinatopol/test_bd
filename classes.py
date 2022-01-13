@@ -1,3 +1,5 @@
+# TODO нет функционала
+
 class Ship:
 
     def __init__(self, ship, weapon, hull, engine):
