@@ -62,9 +62,8 @@ def data_true():
     connection = sqlite3.connect(f'../{NAME_DB}.db')
     cursor = connection.cursor()
     data_weapons = []
-    data_hulls = {}
-    data_engines = {}
-    print('test-3')
+    data_hulls = []
+    data_engines = []
     # Формируем список PRIMARY KEYS
     ships = [el[0] for el in cursor.execute("""SELECT ship FROM Ships""").fetchall()]
     # Для каждого PRIMARY KEY
@@ -72,10 +71,8 @@ def data_true():
         true_el = cursor.execute("""SELECT weapon, hull, engine FROM Ships WHERE ship = ?;""",
                                      (ship, )).fetchall()[0]
         data_weapons.append((ship, true_el[0]))
-        # data_weapons[f'{ship}'] = true_el[0]
-        # data_hulls[f'{ship}'] = true_el[1]
-        # data_engines[f'{ship}'] = true_el[2]
-    print('test-4')
+        data_hulls.append((ship, true_el[1]))
+        data_engines.append((ship, true_el[2]))
     return {'weapons': data_weapons, 'hulls': data_hulls, 'engines': data_engines}
 
 
@@ -84,22 +81,17 @@ def data_change():
     time_base = sqlite3.connect('./copy_bd.db')
     tb_cursor = time_base.cursor()
     data_weapons = []
-    data_hulls = {}
-    data_engines = {}
-    print('test-3')
+    data_hulls = []
+    data_engines = []
     # Формируем список PRIMARY KEYS
     ships = [el[0] for el in tb_cursor.execute("""SELECT ship FROM Ships""").fetchall()]
     # Для каждого PRIMARY KEY
     for ship in ships:
         change_el = tb_cursor.execute("""SELECT weapon, hull, engine FROM Ships WHERE ship = ?;""",
                                           (ship, )).fetchall()[0]
-        print(change_el)
         data_weapons.append((ship, change_el[0]))
-        # data_weapons[f'{ship}'] = change_el[0]
-        # data_hulls[f'{ship}'] = change_el[1]
-        # data_engines[f'{ship}'] = change_el[2]
-    print('test-4')
-    print(data_weapons)
+        data_hulls.append((ship, change_el[1]))
+        data_engines.append((ship, change_el[2]))
     return {'weapons': data_weapons, 'hulls': data_hulls, 'engines': data_engines}
 
 
