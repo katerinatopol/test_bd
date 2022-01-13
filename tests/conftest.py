@@ -4,7 +4,7 @@ import sqlite3
 
 import pytest
 
-from .test_data import NAME_DB, WEAPONS_COUNT, HULLS_COUNT, ENGINES_COUNT
+from .test_data import NAME_DB, NAME_COPY_DB, TABLES #, WEAPONS_COUNT, HULLS_COUNT, ENGINES_COUNT
 
 
 @pytest.fixture(scope='session')
@@ -13,17 +13,17 @@ def change_db():
     # создаем копию базы данных
     connection = sqlite3.connect(f'../{NAME_DB}.db')
     cursor = connection.cursor()
-    cursor.execute("""vacuum into './copy_bd.db';""")
+    cursor.execute(f"""vacuum into '../{NAME_COPY_DB}.db';""")
     connection.close()
-    time_base = sqlite3.connect('./copy_bd.db')
+    time_base = sqlite3.connect(f'../{NAME_COPY_DB}.db')
     tb_cursor = time_base.cursor()
 
     # Для каждого корабля меняем на случайный один из компонентов
     ships = [el[0] for el in tb_cursor.execute("""SELECT ship FROM Ships""").fetchall()]
     for ship in ships:
-        change_el = choice([('weapon', WEAPONS_COUNT, 'Weapon-'),
-                            ('hull', HULLS_COUNT, 'Hull-'),
-                            ('engine', ENGINES_COUNT, 'Engine-')])
+        change_el = choice([('weapon', TABLES['weapons']['count'], 'Weapon-'),
+                            ('hull', TABLES['hulls']['count'], 'Hull-'),
+                            ('engine', TABLES['engines']['count'], 'Engine-')])
         new_value = f"{change_el[2]}{randint(1, change_el[1])}"
         tb_cursor.execute(f"UPDATE Ships SET {change_el[0]} = '{new_value}' WHERE ship = ?;", (ship,))
     time_base.commit()
@@ -54,44 +54,7 @@ def change_db():
 
     # закрываем соединение и удаляем копию БД
     time_base.close()
-    os.remove('./copy_bd.db')
+    os.remove(f'../{NAME_COPY_DB}.db')
 
-
-def data_true():
-    # Открываем соединение с базой данных
-    connection = sqlite3.connect(f'../{NAME_DB}.db')
-    cursor = connection.cursor()
-    data_weapons = []
-    data_hulls = []
-    data_engines = []
-    # Формируем список PRIMARY KEYS
-    ships = [el[0] for el in cursor.execute("""SELECT ship FROM Ships""").fetchall()]
-    # Для каждого PRIMARY KEY
-    for ship in ships:
-        true_el = cursor.execute("""SELECT weapon, hull, engine FROM Ships WHERE ship = ?;""",
-                                     (ship, )).fetchall()[0]
-        data_weapons.append((ship, true_el[0]))
-        data_hulls.append((ship, true_el[1]))
-        data_engines.append((ship, true_el[2]))
-    return {'weapons': data_weapons, 'hulls': data_hulls, 'engines': data_engines}
-
-
-def data_change():
-    # Открываем соединение с базой данных
-    time_base = sqlite3.connect('./copy_bd.db')
-    tb_cursor = time_base.cursor()
-    data_weapons = []
-    data_hulls = []
-    data_engines = []
-    # Формируем список PRIMARY KEYS
-    ships = [el[0] for el in tb_cursor.execute("""SELECT ship FROM Ships""").fetchall()]
-    # Для каждого PRIMARY KEY
-    for ship in ships:
-        change_el = tb_cursor.execute("""SELECT weapon, hull, engine FROM Ships WHERE ship = ?;""",
-                                          (ship, )).fetchall()[0]
-        data_weapons.append((ship, change_el[0]))
-        data_hulls.append((ship, change_el[1]))
-        data_engines.append((ship, change_el[2]))
-    return {'weapons': data_weapons, 'hulls': data_hulls, 'engines': data_engines}
 
 
