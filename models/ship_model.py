@@ -16,8 +16,8 @@ class Ship:
 
     @staticmethod
     def random_param():
-        change_el = choice([('weapon', TABLES['weapons']['count'], 'Weapon-'),
-                            ('hull', TABLES['hulls']['count'], 'Hull-'),
-                            ('engine', TABLES['engines']['count'], 'Engine-')])
-        new_value = f"{change_el[2]}{randint(1, change_el[1])}"
+        change_el = choice([('weapon', TABLES['weapons']['count']),
+                            ('hull', TABLES['hulls']['count']),
+                            ('engine', TABLES['engines']['count'])])
+        new_value = f"{change_el[0].capitalize()}-{randint(1, change_el[1])}"
         return change_el[0], new_value

@@ -1,11 +1,9 @@
 import os
-from random import choice, randint
-import sqlite3
 
 import pytest
 
 from . import NAME_DB, NAME_COPY_DB, TABLES
-from ..models import DataBase, Ship, Weapon, Hull, Engine
+from ..models import DataBase
 from ..utils.key_by_val import key_by_val
 
 
@@ -15,13 +13,10 @@ def change_db():
     true_bd = DataBase(f'../{NAME_DB}')
     temporary_bd = true_bd.copy_database(NAME_COPY_DB)
 
-
     # Для каждого корабля меняем на случайный один из компонентов,
     # для каждого компонента меняем случайно выбранный параметр
-    # models = {'Ships': Ship, 'Weapons': Weapon, 'Hulls': Hull, 'Engines': Engine}
     for table in TABLES.values():
-        model = table['model']
-        # model = models[table['name_table']]
+        model = DataBase.models[table['name_table']]
         primary_key = key_by_val(table['columns'], 'PRIMARY KEY')
         primary_keys = [el[0] for el in temporary_bd.select(name_table=table['name_table'],
                                                             column=primary_key,
@@ -37,7 +32,6 @@ def change_db():
     yield temporary_bd
 
     # закрываем соединение и удаляем копию БД
-    # TODO  PermissionError возникает здесь
     true_bd.close_connection()
     temporary_bd.close_connection()
     os.remove(f'{NAME_COPY_DB}.db')
