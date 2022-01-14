@@ -1,3 +1,5 @@
+from test_bd import models
+
 NAME_DB = 'wargaming'
 NAME_COPY_DB = 'copy_bd'
 VALUE_RANGE = 20
@@ -12,7 +14,8 @@ TABLES = {
          'foreign_key': {'weapon': 'Weapons(weapon)',
                          'hull': 'Hulls(hull)',
                          'engine': 'Engines(engine)'},
-         'count': 200
+         'count': 200,
+         'model': models.Ship
          },
 
     'weapons':
@@ -23,7 +26,8 @@ TABLES = {
                      'diameter': 'INT',
                      'power_volley': 'INT',
                      'count': 'INT'},
-         'count': 20
+         'count': 20,
+         'model': models.Weapon
          },
 
     'hulls':
@@ -32,7 +36,8 @@ TABLES = {
                      'armor': 'INT',
                      'type': 'INT',
                      'capacity': 'INT'},
-         'count': 5
+         'count': 5,
+         'model': models.Hull
          },
 
     'engines':
@@ -40,6 +45,7 @@ TABLES = {
          'columns': {'engine': 'TEXT PRIMARY KEY',
                      'power': 'INT',
                      'type': 'INT'},
-         'count': 6
+         'count': 6,
+         'model': models.Engine
          }
 }
