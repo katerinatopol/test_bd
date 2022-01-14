@@ -5,6 +5,7 @@ import sqlite3
 import pytest
 
 from .test_data import NAME_DB, NAME_COPY_DB, TABLES #, WEAPONS_COUNT, HULLS_COUNT, ENGINES_COUNT
+from ..create_bd import DataBase
 
 
 @pytest.fixture(scope='session')
@@ -55,6 +56,3 @@ def change_db():
     # закрываем соединение и удаляем копию БД
     time_base.close()
     os.remove(f'../{NAME_COPY_DB}.db')
-
-
-

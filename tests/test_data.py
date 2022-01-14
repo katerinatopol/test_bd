@@ -1,14 +1,7 @@
 NAME_DB = 'wargaming'
 NAME_COPY_DB = 'copy_bd'
-# SHIPS_COUNT = 200
-# WEAPONS_COUNT = 20
-# HULLS_COUNT = 5
-# ENGINES_COUNT = 6
-PARAMS = {
-    'weapons': ['weapon', 'reload_speed', 'rotation_speed', 'diameter', 'power_volley', 'count'],
-    'hulls': ['hull', 'armor', 'type', 'capacity'],
-    'engines': ['engine', 'power', 'type'],
-}
+VALUE_RANGE = 20
+
 TABLES = {
     'ships':
         {'name_table': 'Ships',
